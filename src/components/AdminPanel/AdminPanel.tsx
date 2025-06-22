@@ -6,7 +6,6 @@ import { formatDisplayDate, formatDate, getNextSevenDays } from '../../utils/dat
 import { getCurrentMonthStats, isAppointmentPast, isPendingAppointmentExpired } from '../../utils/timeUtils';
 import ConfirmModal from '../ui/ConfirmModal';
 import MoveAppointmentModal from '../ui/MoveAppointmentModal';
-import ConflictModal from '../ui/ConflictModal';
 
 const AdminPanel: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -16,7 +15,6 @@ const AdminPanel: React.FC = () => {
   const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null);
   const [appointmentToMove, setAppointmentToMove] = useState<Appointment | null>(null);
   const [appointmentToMarkNoShow, setAppointmentToMarkNoShow] = useState<Appointment | null>(null);
-  const [conflictingAppointments, setConflictingAppointments] = useState<Appointment[]>([]);
   const [bookedSlots, setBookedSlots] = useState<{ [key: string]: string[] }>({});
   const days = getNextSevenDays();
 
@@ -39,8 +37,6 @@ const AdminPanel: React.FC = () => {
         });
       setBookedSlots(newBookedSlots);
       
-      // Check for conflicts
-      checkForConflicts(updatedAppointments);
       
       setLoading(false);
     });
@@ -56,27 +52,6 @@ const AdminPanel: React.FC = () => {
     };
   }, []);
 
-  // Check for time slot conflicts in pending appointments
-  const checkForConflicts = (appointments: Appointment[]) => {
-    const pendingAppointments = appointments.filter(apt => apt.status === 'pending');
-    const conflicts: { [key: string]: Appointment[] } = {};
-    
-    pendingAppointments.forEach(apt => {
-      const timeKey = `${apt.date}-${apt.time}`;
-      if (!conflicts[timeKey]) {
-        conflicts[timeKey] = [];
-      }
-      conflicts[timeKey].push(apt);
-    });
-    
-    // Find the first conflict with multiple pending appointments
-    const conflictKey = Object.keys(conflicts).find(key => conflicts[key].length > 1);
-    if (conflictKey && conflicts[conflictKey].length > 1) {
-      setConflictingAppointments(conflicts[conflictKey]);
-    } else {
-      setConflictingAppointments([]);
-    }
-  };
 
   // Get conflicting appointments for a specific appointment
   const getConflictingAppointments = (appointment: Appointment): Appointment[] => {
@@ -148,16 +123,6 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  const handleResolveConflict = async (keepAppointmentId: string, deleteAppointmentIds: string[]) => {
-    try {
-      // Delete the conflicting appointments
-      await Promise.all(deleteAppointmentIds.map(id => adminService.deleteAppointment(id)));
-      setConflictingAppointments([]);
-    } catch (error) {
-      console.error('Error resolving conflict:', error);
-      alert('Failed to resolve conflict. Please try again.');
-    }
-  };
 
   const filteredAppointments = appointments.filter(apt => {
     if (filter === 'all') return true;
@@ -188,14 +153,6 @@ const AdminPanel: React.FC = () => {
   // Monthly analytics
   const monthlyStats = getCurrentMonthStats(appointments);
 
-  // Overall analytics
-  const overallAnalytics = {
-    totalAppointments: appointments.length,
-    pendingAppointments: appointments.filter(apt => apt.status === 'pending').length,
-    approvedAppointments: appointments.filter(apt => apt.status === 'approved').length,
-    rejectedAppointments: appointments.filter(apt => apt.status === 'rejected').length,
-    totalRevenue: appointments.filter(apt => apt.status === 'approved').reduce((sum, apt) => sum + apt.totalPrice, 0),
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
