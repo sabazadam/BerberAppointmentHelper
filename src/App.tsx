@@ -105,10 +105,10 @@ function App() {
 
   if (loading && currentView === 'customer') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-barber-cream via-white to-barber-cream/50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-barber-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-barber-dark font-medium">Loading appointments...</p>
+          <div className="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-6 shadow-lg"></div>
+          <p className="text-slate-700 font-semibold text-lg">Loading appointments...</p>
         </div>
       </div>
     );
@@ -117,32 +117,32 @@ function App() {
   return (
     <>
       {/* Navigation */}
-      <div className="fixed top-4 right-4 z-50">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-2">
+      <div className="fixed top-6 right-6 z-50">
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/30 p-3">
           <div className="flex gap-2">
             <button
               onClick={() => setCurrentView('customer')}
-              className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+              className={`px-5 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
                 currentView === 'customer'
-                  ? 'bg-barber-gold text-white shadow-md'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'text-slate-600 hover:bg-white/70 hover:shadow-md'
               }`}
             >
               Customer
             </button>
             <button
               onClick={() => setCurrentView('admin')}
-              className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+              className={`px-5 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
                 currentView === 'admin'
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25'
+                  : 'text-slate-600 hover:bg-white/70 hover:shadow-md'
               }`}
             >
               Admin
             </button>
             <button
               onClick={handleFirebaseTest}
-              className="px-3 py-2 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-all duration-200 text-sm"
+              className="px-4 py-3 rounded-xl font-semibold text-slate-600 hover:bg-white/70 hover:shadow-md transition-all duration-300 transform hover:scale-105 text-sm"
               title="Test Firebase Connection"
             >
               🔧 Test
